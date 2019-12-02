@@ -2,8 +2,8 @@ const fs = require("fs");
 
 const readline = require("readline");
 
-async function start(params) {
-  let fileStream = await fs.createReadStream("dat/oct55i.dat");
+async function txtTable2json(path) {
+  let fileStream = await fs.createReadStream(path);
 
   const rl = readline.createInterface({
     input: fileStream,
@@ -13,19 +13,18 @@ async function start(params) {
 
   let i = 0;
 
-  let head = {};
+  let titles = [];
   let data = [];
-  for await (const line of rl) {
-    // input.txt 中的每一行在这里将会被连续地用作 `line`。
 
+  for await (const line of rl) {
     let cols = line.split(/\s+/);
 
     if (i === 0) {
-      head = Object.fromEntries(cols.map(col => [col, undefined]));
+      titles = cols;
     } else {
       let row = {};
-      Object.keys(head).forEach((th, i) => {
-        row[th] = cols[i];
+      titles.forEach((tit, i) => {
+        row[tit] = cols[i];
       });
       data.push(row);
     }
@@ -34,6 +33,5 @@ async function start(params) {
   }
 
   console.log(data);
+  return data;
 }
-
-start();
